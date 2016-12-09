@@ -2,9 +2,21 @@
 <html>
   <head>
     <title>LD37</title>
+    <meta charset="utf-8">
   </head>
 
   <body>
     <h1>Ludum Dare 37 :: FloatingGhost</h1>
+    <div id="game"></div>
   </body>
+
+  <script src="js/lib/phaser.js"></script>
+  <script src="js/lib/testing/box2d-plugin-full.js"></script>
+  <script src="js/states/menu.js"></script>
+
+  <script>
+    var game = new Phaser.Game(640, 480, Phaser.AUTO, "game");
+    game.state.add("Menu", Menu, true);
+  </script>
+
 </html>
