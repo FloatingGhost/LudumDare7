@@ -2,6 +2,10 @@ var BuildRoom = function() {};
 BuildRoom.prototype = {
   // Are we accepting clicks?
   clickIsActive: false,
+  // Is the hammer demo playing with no input?
+  demo: false,
+  // Is the hammer playing and accepting input?
+  startHammer: false,
 
   init: function() {
     console.log("Building a room!");
@@ -11,79 +15,99 @@ BuildRoom.prototype = {
   preload: function() {
     this.game.load.image("test", "img/test.png");
     this.game.load.audio("blip", "snd/Blip.wav");
-
+    this.game.load.audio("metronome", "snd/Metronome.wav");
+    this.game.load.spritesheet("hammer", "img/Hammer.png", 200, 200);
+    this.game.load.spritesheet("demohammer", "img/DemoHammer.png", 200, 200);
+    this.game.load.image("wood", "img/wood.png");
   },
   create: function() {
     this.testSprite = this.game.add.sprite(100,100,"test");
     this.testSprite.alpha = 0;
 
     this.beatUtil = new beatProc();
-    this.beatUtil.setExpectedTimes([1000, 1000, 1000]);
 
-    this.clickIsActive = false;
-    this.demo = true;
+    this.clickIsActive = false
 
     this.blip = this.game.add.audio("blip");
-    
+    this.metronome = this.game.add.audio("metronome");  
     this.countdown = this.game.add.text(0,0,"",{fill:"#ffffff",
-                                                font:"65px Arial"})
+                                               font:"65px Arial"})
+    this.game.input.onDown.add(this.processClick, this);
+
+    this.hammer = this.game.add.sprite(0, 200, "hammer");
+    this.hammer.animations.add("hit");
+
+    this.demoHammer = this.game.add.sprite(500, 100, "demohammer");
+    this.demoHitAnim = this.demoHammer.animations.add("hit");
+    this.demoHammer.scale.setTo(0.8);
+    this.game.time.events.loop(500, this.playMetronome, this)
+    this.loadLevel();
+   
+  },
+
+  loadLevel: function() {
+    this.beatUtil.setExpectedTimes(levelConfig.levelConfig.splice(0,1)[0]);
+    if (!this.beatUtil.getExpectedTimes()) {
+      console.log("EXIT!")
+    }
+    this.demo = true;
   },
 
   activateClick: function() {
+    console.log("CLICK ENABLED")
     this.clickIsActive = true;
     this.beatUtil.start();
+    this.startHammer = true;
   },
   gogogo: function() {
-    setTimeout(function(that){that.activateClick()},
-               3000,this);
-    setTimeout(function(that){that.setText("2")}, 1000, this.countdown)
-    setTimeout(function(that){that.setText("1")}, 2000, this.countdown)
-    setTimeout(function(that){that.setText("GO")}, 3000, this.countdown)
+    this.game.time.events.add(3000,this.activateClick, this);
+    this.game.time.events.add(1000,this.setCountdownText, this,"2")
+    this.game.time.events.add(2000,this.setCountdownText,this,"1")
+    this.game.time.events.add(3000,this.setCountdownText,this,"GO")
   },
+  playMetronome: function() { this.metronome.play(); },
+  setCountdownText: function(a) { this.countdown.setText(a); },
+  playDemoHammer: function() { this.demoHitAnim.play(); },
+  playBlip: function() { this.blip.play() },
+  
   update: function() {
     // Show the user what rhythm to do
-    if (this.demo) {
+    if (this.demo || (this.clickIsActive && this.startHammer)) {
       var nullTween = {x : this.testSprite.x}
       var total = 0;
       var t =null;
-      this.beatUtil.getExpectedTimes().forEach(
-        (time) => {
+      for (var i in this.beatUtil.getExpectedTimes()) {
+        var time = this.beatUtil.getExpectedTimes()[i];  
           console.log(time);
           // Do nothing for some time, then boop
-          t = this.game.add.tween(this.testSprite).to({alpha:1}, 50,
-            "Linear", true, total + time - 100)
-          .chain(
-            this.game.add.tween(this.testSprite).to({alpha:0}, 50)
-          );
-          setTimeout(function(snd){snd.play()}, total+time-40, this.blip);
-          t.start();
+          this.game.time.events.add(time+total, 
+                                    this.playDemoHammer,
+                                    this);  
+          this.game.time.events.add(total+time, this.playBlip, this);
           total += time;
-        }
-      )
-      t.onComplete.add(this.gogogo, this);
-      
-      this.countdown.setText("3")
-      this.demo = false;
-    }
-    else if (this.clickIsActive) {
-      if (this.game.input.activePointer.justPressed(25)) {
-        console.log(this.beatUtil.registerClick());
-
-        this.testSprite.x = this.game.input.activePointer.pageX;
-        this.testSprite.y = this.game.input.activePointer.pageY;
-        
-        this.game.add.tween(this.testSprite)
-        .to({ alpha: 1 }, 50)
-        .chain(this.game.add.tween(this.testSprite)
-                .to({alpha : 0}, 50))
-        .start();
       }
-
-      if (this.beatUtil.doesStop()) {
-        console.log("CLICK DISABLED!");
-        this.clickIsActive = false;
+      if (this.demo) {
+        console.log("DEMO SET");
+        this.game.time.events.add(4000, this.gogogo, this); 
+        this.countdown.setText("3")
+        this.demo = false;
       }
+      if (this.startHammer) { this.startHammer = false }
+    } 
+    if (this.beatUtil.doesStop() && this.clickIsActive) {
+      console.log("CLICK DISABLED!");
+      this.setCountdownText("WATCH -->")
+      this.clickIsActive = false;
+      this.loadLevel();
     }
-         
+             
+  },
+
+  processClick: function() {
+    if (this.clickIsActive) {
+      this.hammer.animations.play("hit");
+      console.log(this.beatUtil.registerClick());
+    }
+
   },
 };
