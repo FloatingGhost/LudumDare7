@@ -58,6 +58,9 @@ BuildRoom.prototype = {
     this.wood = this.game.add.group();
     this.wood.x = 0;
     this.currentLevel = levelConfig.levelConfig.splice(0, 1)[0];
+    if (! this.currentLevel ) {
+      this.game.state.start("FurnishRoom");
+    }
     for (var i in this.currentLevel) {
       if (this.currentLevel[i]) {
         var w =this.wood.create(-(i*100)+15, 330, "nail");
@@ -65,7 +68,7 @@ BuildRoom.prototype = {
       }
     } 
 
-    var w = this.wood.create(-375, 400, "wood");
+    var w = this.wood.create(-350, 400, "wood");
     // Wait for the demo to play, the move
     t= this.game.add.tween(this.wood).to({x:"+400"}, 428*4*2, "Linear",true, 
                                       428*4*2)
