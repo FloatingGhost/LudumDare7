@@ -25,7 +25,7 @@
     .then((resp) => { return resp.json() })
     .then((lc) => { levelConfig = lc })
     .then(() => {
-      game = new Phaser.Game(640, 480, Phaser.CANVAS, "game");
+      game = new Phaser.Game(640, 480, Phaser.WEBGL, "game");
       game.state.add("BuildRoom", BuildRoom);
       game.state.add("Menu", Menu, true);
     })

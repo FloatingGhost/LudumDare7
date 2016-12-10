@@ -1,6 +1,6 @@
 var beatProc = function(){return{
   // The intervals at which we expect to recieve clicks
-  expectedTimes: [],
+  bar: [],
   // What we actually got
   actualTimes: [],
   // When the timer was started
@@ -11,15 +11,24 @@ var beatProc = function(){return{
   tolerance: 250,
   // This is a shit
   DONTEVENTRYIT: [],
+  // Seconds per beat
+  bps: 0,
+  // The actual millis for the beat
+  expectedTimes: [],
 
+  millisPerBeat: 428,
   // Set the expected times
-  setExpectedTimes: function(times) {
+  setBar: function(times) {
     console.log("EXPECTED ", times);
-    this.expectedTimes = times;
+    this.bar = times;
   },
 
-  getExpectedTimes: function() {
-    return this.expectedTimes;
+  setBPS: function(i) {
+    this.bps = i; 
+  },
+
+  getBar: function() {
+    return this.bar;
   },
 
   // Set the actual times
@@ -30,11 +39,33 @@ var beatProc = function(){return{
   // Start the timer
   start: function() {
     var sum = 0;
-    this.expectedTimes.forEach(
+    this.bar.forEach(
       (i) => { sum += i }
     );
+    this.timeForABar = this.millisPerBeat * 8;
     this.startTime = Date.now();
-    this.stopTime  = this.startTime + sum;
+    this.stopTime  = this.startTime + 2*this.timeForABar;
+    console.log("EINE KLEINE BAR", this.timeForABar);
+    this.expectedTimes = [];
+    console.log("Mapping ", this.bar);
+    for (var beat in this.bar) {
+      var v = this.bar[beat];
+      var beatStartsAt = this.startTime + (beat * this.millisPerBeat);
+      switch (v) {
+        case 0:
+          break;
+        case 1:
+          this.expectedTimes.push(beatStartsAt);
+          break;
+        case 2:
+          this.expectedTimes.push(beatStartsAt);
+          this.expectedTimes.push(beatStartsAt + (this.millisPerBeat / 2));
+          break;
+        default:
+          console.log("The fuck is beat value ", v);
+      }
+    }
+    console.log(this.expectedTimes);
   },
  
   // Register a click
@@ -45,31 +76,15 @@ var beatProc = function(){return{
 
   // Figure out if we should stop now
   doesStop: function() {
-    return (Date.now() >= this.stopTime+1000);
+    return (Date.now() >= this.stopTime);
   },
 
   // Figure out how far off the user's clicks were
   processClicks: function() {
-    // Use the delays and the start time to find out the 
-    // timestamp when the user should have clicked
-    var adjustedExpectedTimes = [];
-    var adjust = 0;
-    var mapping = {};
     for (var i in this.expectedTimes) {
-      var time = this.expectedTimes[i];
-      adjustedExpectedTimes.push(this.startTime + adjust);
-    
-      mapping[time] = this.startTime + adjust; 
-      adjust += time;
-    }
-    console.log(adjustedExpectedTimes, Date.now())
-    for (var i in adjustedExpectedTimes) {
-      var adj = adjustedExpectedTimes[i];
-      if ((Math.abs(Date.now() - adj-1000)) <= this.tolerance) {
+      if (Math.abs(this.expectedTimes[i]-Date.now()) <= this.tolerance)
         return true;
-      } 
-      console.log(Math.abs(Date.now() - adj));
     }
     return false;
-  },
+  }
 }}
