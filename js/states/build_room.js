@@ -30,7 +30,7 @@ BuildRoom.prototype = {
     this.game.input.onDown.add(this.hit, this);
     this.start_game();
     this.wood = this.game.add.group();
-    
+    this.hitCount = 0;
   },
 
   hammerHit: function(body, bodyB, shapeA, shapeB, eqn) {
@@ -46,8 +46,8 @@ BuildRoom.prototype = {
           console.log(item.world.x);
           if (item.world.x > 25 && item.world.x < 60) {
             item.DOTHETHING = false;
-            item.kill();
-            console.log("YEAH BOIIII");
+            this.game.add.tween(item)
+            .to({y:"+30"}, 300, "Linear", true, 300).start()
           } 
         }
       }
@@ -55,7 +55,7 @@ BuildRoom.prototype = {
   },
 
   loadLevel: function() {
-    this.wood.removeAll();
+    this.wood = this.game.add.group();
     this.wood.x = 0;
     this.currentLevel = levelConfig.levelConfig.splice(0, 1)[0];
     for (var i in this.currentLevel) {
@@ -65,7 +65,7 @@ BuildRoom.prototype = {
       }
     } 
 
-    this.wood.create(-400, 400, "wood");
+    var w = this.wood.create(-375, 400, "wood");
     // Wait for the demo to play, the move
     t= this.game.add.tween(this.wood).to({x:"+400"}, 428*4*2, "Linear",true, 
                                       428*4*2)
