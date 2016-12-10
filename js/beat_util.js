@@ -9,6 +9,8 @@ var beatProc = function(){return{
   stopTime: 0,
   // The amount of leeway you get
   tolerance: 500,
+  // This is a shit
+  DONTEVENTRYIT: [],
 
   // Set the expected times
   setExpectedTimes: function(times) {
@@ -61,13 +63,12 @@ var beatProc = function(){return{
     }
     console.log(adjustedExpectedTimes, Date.now())
     for (var i in adjustedExpectedTimes) {
-      if (Math.abs(Date.now() - adjustedExpectedTimes[i]) <= this.tolerance) {
-        this.expectedTimes = this.expectedTimes.filter(
-          (y)=>{return y != mapping[adjustedExpectedTimes[i]]}
-        );
+      var adj = adjustedExpectedTimes[i];
+      if ((Math.abs(Date.now() - adj) <= this.tolerance) && !(this.DONTEVENTRYIT.includes(adj))) {
+        this.DONTEVENTRYIT.push(adj);
         return true;
       } 
-      console.log(Math.abs(Date.now() - adjustedExpectedTimes[i]));
+      console.log(Math.abs(Date.now() - adj));
     }
     return false;
   },
