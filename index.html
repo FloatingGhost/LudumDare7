@@ -12,10 +12,16 @@
 
   <script src="js/lib/phaser.js"></script>
   <script src="js/lib/testing/box2d-plugin-full.js"></script>
+  <script src="js/beat_util.js"></script>
+
   <script src="js/states/menu.js"></script>
+  <script src="js/states/build_room.js"></script>
+
 
   <script>
     var game = new Phaser.Game(640, 480, Phaser.AUTO, "game");
+    game.state.add("BuildRoom", BuildRoom);
+
     game.state.add("Menu", Menu, true);
   </script>
 
