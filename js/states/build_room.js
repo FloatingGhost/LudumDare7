@@ -17,6 +17,8 @@ BuildRoom.prototype = {
     this.game.load.image("wood", "img/wood.png");
     this.game.load.image("nail", "img/nail.png");
     this.game.load.audio("music", "snd/Level1.wav");
+    this.game.load.audio("musicfaster", "snd/HittyHittyFaster.wav");
+    this.game.load.audio("musicfastest", "snd/HittyHittyFastest.wav");
     this.game.load.spritesheet("bg", "img/HouseBuilding.png", 640, 480);
   },
   create: function() {
@@ -24,20 +26,41 @@ BuildRoom.prototype = {
     this.house.animations.add("build");
     this.game.physics.startSystem(Phaser.Physics.P2JS);
     this.music = this.game.add.audio("music"); 
+    this.music.onStop.add(this.playFaster, this);
+    this.music1 = this.game.add.audio("musicfaster");
+    this.music2 = this.game.add.audio("musicfastest");
+    this.music1.onStop.add(this.playFastest, this);
+    this.music2.onStop.add(this.nextLevel, this);
     this.music.onPlay.add(this.loadLevel, this);
+    this.music1.onPlay.add(this.loadLevel, this);
+    this.music2.onPlay.add(this.loadLevel, this);
     this.hammer = this.game.add.sprite(100, 300, "hammer");
     this.hammer.animations.add("hit");
     this.game.physics.p2.enable(this.hammer);
     this.hammer.body.onBeginContact.add(this.hammerHit, this);
     this.hammer.body.collideWorldBounds = false;
     this.game.input.onDown.add(this.hit, this);
+    this.barTime = 428;
     this.start_game();
     this.wood = this.game.add.group();
     this.hitCount = 0;
   },
+  nextLevel: function() {
+
+  },
 
   hammerHit: function(body, bodyB, shapeA, shapeB, eqn) {
     console.log("HITTY!");
+  },
+
+  playFaster: function() {
+    this.barTime = 300;
+    this.music1.play();
+  },
+
+  playFastest: function() {
+    this.barTime = 250;
+    this.music2.play();
   },
   
   hit: function() {
@@ -50,7 +73,7 @@ BuildRoom.prototype = {
           if (item.world.x > 20 && item.world.x < 70) {
             item.DOTHETHING = false;
             this.hitCount += 1;
-            if (this.hitCount %2 == 0 && this.house.frame < 7)
+            if (this.hitCount %4 == 0 && this.house.frame < 7)
               this.house.frame++;
             
            
@@ -66,6 +89,7 @@ BuildRoom.prototype = {
     this.wood = this.game.add.group();
     this.wood.x = 0;
     this.currentLevel = levelConfig.levelConfig.splice(0, 1)[0];
+    if (this.currentLevel == -1) return;
     if (! this.currentLevel ) {
       if (this.house.frame > 6) {
         localStorage.setItem("fullyBuilt", 1);
@@ -83,8 +107,8 @@ BuildRoom.prototype = {
 
     var w = this.wood.create(-350, 400, "wood");
     // Wait for the demo to play, the move
-    t= this.game.add.tween(this.wood).to({x:"+400"}, 428*4*2, "Linear",true, 
-                                      428*4*2)
+    t= this.game.add.tween(this.wood).to({x:"+400"}, this.barTime*4*2, "Linear",true, 
+                                      this.barTime*4*2)
     t.onComplete.add(this.woodFlyAway,this)
     t.onComplete.add(this.woodFinish, this);
     t.start();

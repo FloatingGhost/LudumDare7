@@ -10,9 +10,8 @@ FurnishRoom.prototype = {
   },
   preload: function() {
     if (localStorage.getItem("fullyBuilt")) {
-      this.game.load.image("bg", "img/homeBG.png");
+      var bg = this.game.load.image("bg", "img/homeBG.png");
       this.game.load.audio("snd", "snd/Level2.wav");
-
     } else {
       this.game.load.image("bg", "img/homeBGBroked.png");
       this.game.load.audio("snd","snd/wind.wav");
@@ -23,8 +22,10 @@ FurnishRoom.prototype = {
     this.game.load.audio("count3", "snd/onthecountofthree.wav");
   },
   create: function() {
-    this.game.add.sprite(0,0,"bg");
-    this.game.add.sprite(450, 200, "boxman");
+    var bg = this.game.add.sprite(0,0,"bg");
+    
+    bg.animations.add("wiggle").play(10, true);
+    this.boxman = this.game.add.sprite(450, 200, "boxman");
     this.c1 = this.game.add.audio("count1");
     this.c2 = this.game.add.audio("count2");
     this.c3 = this.game.add.audio("count3");
@@ -32,7 +33,7 @@ FurnishRoom.prototype = {
     this.c2.onStop.add(this.enable,this);
     this.c3.onStop.add(this.enable,this);
     this.game.add.audio("snd").play();
-    this.levels = [3, 3, 2, 3, 1, 2];
+    this.levels = [3, 3, 2, 3, 1, 2, 1, 1];
     this.game.input.onTap.add(this.processClick, this);
     this.loadLevel();
   },
@@ -41,6 +42,9 @@ FurnishRoom.prototype = {
     if (this.clickEnabled) {
       console.log("OKAY!");
       this.clickEnabled = false;
+      this.game.add.tween(this.boxman)
+      .to({x:"-50"}, 300)
+      .start();
     }
   },
 
