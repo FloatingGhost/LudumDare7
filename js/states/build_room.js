@@ -67,6 +67,11 @@ BuildRoom.prototype = {
     this.wood.x = 0;
     this.currentLevel = levelConfig.levelConfig.splice(0, 1)[0];
     if (! this.currentLevel ) {
+      if (this.house.frame > 6) {
+        localStorage.setItem("fullyBuilt", 1);
+      } else {
+        localStorage.setItem("fullyBuilt", 0)
+      }
       this.game.state.start("FurnishRoom");
     }
     for (var i in this.currentLevel) {

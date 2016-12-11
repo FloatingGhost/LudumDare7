@@ -19,7 +19,8 @@
   <script src="js/states/menu.js"></script>
   <script src="js/states/build_room.js"></script>
   <script src="js/states/furnish_room.js"></script>
-
+  <script src="js/states/exit.js"></script>
+  
   <script>
     var levelConfig;
     var game;
@@ -30,6 +31,7 @@
       game = new Phaser.Game(640, 480, Phaser.WEBGL, "game");
       game.state.add("BuildRoom", BuildRoom);
       game.state.add("FurnishRoom", FurnishRoom);
+      game.state.add("Exit", Exit);
       game.state.add("Menu", Menu, true);
       
     })
