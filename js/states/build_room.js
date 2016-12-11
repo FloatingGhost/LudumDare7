@@ -19,6 +19,7 @@ BuildRoom.prototype = {
     this.game.load.audio("music", "snd/Level1.wav");
     this.game.load.audio("musicfaster", "snd/HittyHittyFaster.wav");
     this.game.load.audio("musicfastest", "snd/HittyHittyFastest.wav");
+    this.game.load.audio("musicohgod"  , "snd/HittyHittyOhGod.wav");
     this.game.load.spritesheet("bg", "img/HouseBuilding.png", 640, 480);
   },
   create: function() {
@@ -29,11 +30,14 @@ BuildRoom.prototype = {
     this.music.onStop.add(this.playFaster, this);
     this.music1 = this.game.add.audio("musicfaster");
     this.music2 = this.game.add.audio("musicfastest");
+    this.music3 = this.game.add.audio("musicohgod");
     this.music1.onStop.add(this.playFastest, this);
-    this.music2.onStop.add(this.nextLevel, this);
+    this.music2.onStop.add(this.playOhGod, this);
+    this.music3.onStop.add(this.loadLevel,this);
     this.music.onPlay.add(this.loadLevel, this);
     this.music1.onPlay.add(this.loadLevel, this);
     this.music2.onPlay.add(this.loadLevel, this);
+    this.music3.onPlay.add(this.loadLevel, this);
     this.hammer = this.game.add.sprite(100, 300, "hammer");
     this.hammer.animations.add("hit");
     this.game.physics.p2.enable(this.hammer);
@@ -47,6 +51,11 @@ BuildRoom.prototype = {
   },
   nextLevel: function() {
 
+  },
+
+  playOhGod: function() {
+    this.barTime = 214;
+    this.music3.play();
   },
 
   hammerHit: function(body, bodyB, shapeA, shapeB, eqn) {
@@ -96,7 +105,7 @@ BuildRoom.prototype = {
       } else {
         localStorage.setItem("fullyBuilt", 0)
       }
-      this.game.state.start("FurnishRoom");
+      this.game.state.start("Tut2");
     }
     for (var i in this.currentLevel) {
       if (this.currentLevel[i]) {
