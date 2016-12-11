@@ -3,7 +3,7 @@ Menu.prototype = {
   init: function() {
   },
   start_game: function() {
-    this.game.state.start("BuildRoom");
+    this.game.state.start("Tut1");
   },
   preload: function() {
     this.game.load.audio("voice", "snd/menusound.wav");

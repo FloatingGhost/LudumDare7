@@ -12,6 +12,8 @@
     <blockquote>I am a terrible dev</blockquote>
   </body>
 
+  <script src="js/lib/fetch.js"></script>
+
   <script src="js/lib/phaser.js"></script>
   <script src="js/lib/testing/box2d-plugin-full.js"></script>
   <script src="js/beat_util.js"></script>
@@ -20,6 +22,8 @@
   <script src="js/states/build_room.js"></script>
   <script src="js/states/furnish_room.js"></script>
   <script src="js/states/exit.js"></script>
+  <script src="js/states/tutorial1.js"></script>
+  <script src="js/states/tutorial2.js"></script> 
   
   <script>
     var levelConfig;
@@ -32,6 +36,8 @@
       game.state.add("BuildRoom", BuildRoom);
       game.state.add("FurnishRoom", FurnishRoom);
       game.state.add("Exit", Exit);
+      game.state.add("Tut1", Tut1);
+      game.state.add("Tut2", Tut2);
       game.state.add("Menu", Menu, true);
       
     })
