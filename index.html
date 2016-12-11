@@ -8,6 +8,8 @@
   <body>
     <h1>Ludum Dare 37 :: FloatingGhost</h1>
     <div id="game"></div>
+    <p>Please ignore the screen tearing and sync issues ;)</p>
+    <blockquote>I am a terrible dev</blockquote>
   </body>
 
   <script src="js/lib/phaser.js"></script>
@@ -16,7 +18,7 @@
 
   <script src="js/states/menu.js"></script>
   <script src="js/states/build_room.js"></script>
-
+  <script src="js/states/furnish_room.js"></script>
 
   <script>
     var levelConfig;
@@ -27,7 +29,9 @@
     .then(() => {
       game = new Phaser.Game(640, 480, Phaser.WEBGL, "game");
       game.state.add("BuildRoom", BuildRoom);
+      game.state.add("FurnishRoom", FurnishRoom);
       game.state.add("Menu", Menu, true);
+      
     })
   </script>
 

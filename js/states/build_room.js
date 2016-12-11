@@ -17,11 +17,14 @@ BuildRoom.prototype = {
     this.game.load.image("wood", "img/wood.png");
     this.game.load.image("nail", "img/nail.png");
     this.game.load.audio("music", "snd/Level1.wav");
+    this.game.load.spritesheet("bg", "img/HouseBuilding.png", 640, 480);
   },
   create: function() {
+    this.house = this.game.add.sprite(0,0,"bg");
+    this.house.animations.add("build");
     this.game.physics.startSystem(Phaser.Physics.P2JS);
     this.music = this.game.add.audio("music"); 
-    this.game.time.events.add(428*2, this.loadLevel, this);
+    this.music.onPlay.add(this.loadLevel, this);
     this.hammer = this.game.add.sprite(100, 300, "hammer");
     this.hammer.animations.add("hit");
     this.game.physics.p2.enable(this.hammer);
@@ -44,8 +47,13 @@ BuildRoom.prototype = {
         if (item.DOTHETHING) {
           console.log(item);
           console.log(item.world.x);
-          if (item.world.x > 25 && item.world.x < 60) {
+          if (item.world.x > 20 && item.world.x < 70) {
             item.DOTHETHING = false;
+            this.hitCount += 1;
+            if (this.hitCount %2 == 0 && this.house.frame < 7)
+              this.house.frame++;
+            
+           
             this.game.add.tween(item)
             .to({y:"+30"}, 300, "Linear", true, 300).start()
           } 
